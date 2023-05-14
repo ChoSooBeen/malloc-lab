@@ -64,8 +64,9 @@ static void *coalesce(void *bp);
 static void *find_fit(size_t asize);
 static void place(void *bp, size_t asize);
 
-/* ------------- 리스트 헤더 --------------------------------------------*/
+/* -------------전역 변수 선언 --------------------------------------------*/
 static void *heap_listp;
+static char *nextfit;
 
 /* 
  * mm_init - initialize the malloc package.
@@ -150,15 +151,46 @@ void *mm_malloc(size_t size){
     return bp;
 }
 
+/* --------------------------first fit------------------------------------ */
 /*
  * first-fit 검색 수행
  * 할당 받을 가용 블록이 없을 경우 NULL 반환
+ * 54점
+ */
+// static void *find_fit(size_t asize) {
+//     char *bp = (char *)heap_listp;
+//     //epilogue 의 크기는 0이다.
+//     while (GET_SIZE(HDRP(bp)) > 0) {
+//         if (!GET_ALLOC(HDRP(bp)) && (GET_SIZE(HDRP(bp)) >= asize)) {
+//             return bp;
+//         }
+//         bp = NEXT_BLKP(bp);
+//     }
+//     return NULL;
+// }
+/* --------------------------first fit------------------------------------ */
+
+/*
+ * next-fit 검색 수행
+ * 53점
  */
 static void *find_fit(size_t asize) {
-    char *bp = (char *)heap_listp;
-    //epilogue 의 크기는 0이다.
+    char *bp = nextfit;
+    // epilogue 의 크기는 0이다.
     while (GET_SIZE(HDRP(bp)) > 0) {
         if (!GET_ALLOC(HDRP(bp)) && (GET_SIZE(HDRP(bp)) >= asize)) {
+            nextfit = NEXT_BLKP(bp);
+            return bp;
+        }
+        bp = NEXT_BLKP(bp);
+    }
+
+    //epilogue에서 while문이 끝나면 처음부터 검색
+    //단, nextfit보다 전까지만 검색
+    bp = heap_listp; //처음으로 초기화
+    while (bp < nextfit){
+        if (!GET_ALLOC(HDRP(bp)) && (GET_SIZE(HDRP(bp)) >= asize)) {
+            nextfit = NEXT_BLKP(bp);
             return bp;
         }
         bp = NEXT_BLKP(bp);
@@ -204,6 +236,7 @@ static void *coalesce(void *bp) {
     size_t size = GET_SIZE(HDRP(bp));
 
     if (prev_alloc && next_alloc) { //둘다 할당되어 있는 상태일 때
+        nextfit = NEXT_BLKP(bp); //현재 탐색한 노드 저장
         return bp;
     }
     else if (prev_alloc && !next_alloc) { //이전 블록만 할당되어 있을 때
@@ -227,6 +260,7 @@ static void *coalesce(void *bp) {
         //블록의 앞을 가리켜야 하므로 이전의 블록 포인터가 현재 블록 포인터
         bp = PREV_BLKP(bp);
     }
+    nextfit = NEXT_BLKP(bp); //현재 탐색한 노드 저장
     return bp;
 }
 
