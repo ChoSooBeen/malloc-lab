@@ -66,7 +66,6 @@ static void place(void *bp, size_t asize);
 
 /* -------------전역 변수 선언 --------------------------------------------*/
 static void *heap_listp;
-static char *nextfit;
 
 /* 
  * mm_init - initialize the malloc package.
@@ -86,7 +85,6 @@ int mm_init(void){
     if (extend_heap(CHUNKSIZE/WSIZE) == NULL) {
         return -1;
     }
-    nextfit = heap_listp; //마지막 탐색지점을 저장할 변수 초기화
     return 0;
 }
 
@@ -153,26 +151,15 @@ void *mm_malloc(size_t size){
 }
 
 /*
- * next-fit 검색 수행
- * 83점
+ * first-fit 검색 수행
+ * 할당 받을 가용 블록이 없을 경우 NULL 반환
+ * 54점
  */
 static void *find_fit(size_t asize) {
-    char *bp = nextfit;
-    // epilogue 의 크기는 0이다.
+    char *bp = (char *)heap_listp;
+    //epilogue 의 크기는 0이다.
     while (GET_SIZE(HDRP(bp)) > 0) {
         if (!GET_ALLOC(HDRP(bp)) && (GET_SIZE(HDRP(bp)) >= asize)) {
-            nextfit = bp;
-            return bp;
-        }
-        bp = NEXT_BLKP(bp);
-    }
-
-    //epilogue에서 while문이 끝나면 처음부터 검색
-    //단, nextfit보다 전까지만 검색
-    bp = heap_listp; //처음으로 초기화
-    while (bp < nextfit){
-        if (!GET_ALLOC(HDRP(bp)) && (GET_SIZE(HDRP(bp)) >= asize)) {
-            nextfit = bp;
             return bp;
         }
         bp = NEXT_BLKP(bp);
@@ -192,7 +179,6 @@ static void place(void *bp, size_t asize) {
         bp = NEXT_BLKP(bp);
         PUT(HDRP(bp), PACK(size - asize, 0));
         PUT(FTRP(bp), PACK(size - asize, 0));
-        nextfit = bp; //남은 가용 영역을 마지막으로 탐색했다.
     }
     else { //현재 영역 전부 사용
         PUT(HDRP(bp), PACK(size, 1));
@@ -242,7 +228,6 @@ static void *coalesce(void *bp) {
         //블록의 앞을 가리켜야 하므로 이전의 블록 포인터가 현재 블록 포인터
         bp = PREV_BLKP(bp);
     }
-    nextfit = bp; //현재 탐색한 노드 저장
     return bp;
 }
 
