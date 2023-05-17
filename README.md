@@ -7,6 +7,13 @@
 #
 ######################################################################
 
+### 나으 branch
++ implicit/first-fit :묵시적 가용리스트 - first-fit 으로 구현
++ implicit/next-fit : 묵시적 가용리스트 - next-fit 으로 구현
++ explicit/LIFO : 명시적 가용리스트 - first-fit(LIFO) 으로 구현
++ segregated/best-fit : 분리 가용리스트 - best-fit 으로 구현
++ main : 중간에 브랜치를 생성하여 나눔 = 여러 코드가 합쳐짐
+
 ***********
 Main Files:
 ***********
