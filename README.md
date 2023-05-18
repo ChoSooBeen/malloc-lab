@@ -7,7 +7,7 @@
 #
 ######################################################################
 
-### 나으 branch
+### branch로 구분
 + implicit/first-fit :묵시적 가용리스트 - first-fit 으로 구현
 + implicit/next-fit : 묵시적 가용리스트 - next-fit 으로 구현
 + explicit/LIFO : 명시적 가용리스트 - first-fit(LIFO) 으로 구현
