@@ -7,7 +7,18 @@
 #
 ######################################################################
 
-### branch로 구분
+## :hourglass: 2023.05.12 ~ 2023.05.18
+## :bulb: 시스템 구조 이해 및 심화 자료구조 학습
+
+:bookmark: 블로그 정리
+- 동적 메모리 할당 개념 : https://soo-note.tistory.com/69
+- implicit, first-fit : https://soo-note.tistory.com/70
+- implicit, next-fit : https://soo-note.tistory.com/71
+- explicit, first-fit : https://soo-note.tistory.com/72
+- segregated list : https://soo-note.tistory.com/73
+- segregated, best-fit : https://soo-note.tistory.com/74
+
+## :pushpin: 할당기 구현 방법 : branch로 구분
 + implicit/first-fit :묵시적 가용리스트 - first-fit 으로 구현
 + implicit/next-fit : 묵시적 가용리스트 - next-fit 으로 구현
 + explicit/LIFO : 명시적 가용리스트 - first-fit(LIFO) 으로 구현
